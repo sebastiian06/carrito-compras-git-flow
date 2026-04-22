@@ -3,11 +3,13 @@ const app = express();
 
 app.use(express.json());
 
-/* =============================
-   USUARIOS
-============================= */
-
 let usuarios = [];
+let productos = [];
+let facturas = [];
+
+/* =============================
+USUARIOS
+============================= */
 
 app.post('/usuarios', (req, res) => {
     const { nombre, email } = req.body;
@@ -18,14 +20,15 @@ app.post('/usuarios', (req, res) => {
         });
     }
 
-    const usuario = { nombre, email };
+    const usuario = {
+        id: usuarios.length + 1,
+        nombre,
+        email
+    };
 
     usuarios.push(usuario);
 
-    res.status(201).json({
-        mensaje: "Usuario creado correctamente",
-        usuario
-    });
+    res.status(201).json(usuario);
 });
 
 app.get('/usuarios', (req, res) => {
@@ -34,10 +37,8 @@ app.get('/usuarios', (req, res) => {
 
 
 /* =============================
-   PRODUCTOS
+PRODUCTOS
 ============================= */
-
-let productos = [];
 
 app.post('/productos', (req, res) => {
     const { nombre, precio } = req.body;
@@ -56,10 +57,7 @@ app.post('/productos', (req, res) => {
 
     productos.push(producto);
 
-    res.status(201).json({
-        mensaje: "Producto creado",
-        producto
-    });
+    res.status(201).json(producto);
 });
 
 app.get('/productos', (req, res) => {
@@ -68,7 +66,36 @@ app.get('/productos', (req, res) => {
 
 
 /* =============================
-   SERVER
+FACTURAS
+============================= */
+
+app.post('/facturas', (req, res) => {
+    const { usuarioId } = req.body;
+
+    if(!usuarioId){
+        return res.status(400).json({
+            mensaje: "usuarioId es obligatorio"
+        });
+    }
+
+    const factura = {
+        id: facturas.length + 1,
+        usuarioId,
+        fecha: new Date()
+    };
+
+    facturas.push(factura);
+
+    res.status(201).json(factura);
+});
+
+app.get('/facturas', (req, res) => {
+    res.json(facturas);
+});
+
+
+/* =============================
+SERVER
 ============================= */
 
 app.listen(3000, () => {
