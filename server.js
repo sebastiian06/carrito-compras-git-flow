@@ -3,11 +3,14 @@ const app = express();
 
 app.use(express.json());
 
-/* =============================
-   USUARIOS
-============================= */
-
 let usuarios = [];
+let productos = [];
+let facturas = [];
+let detalleFacturas = [];
+
+/* =============================
+USUARIOS
+============================= */
 
 app.post('/usuarios', (req, res) => {
     const { nombre, email } = req.body;
@@ -18,14 +21,15 @@ app.post('/usuarios', (req, res) => {
         });
     }
 
-    const usuario = { nombre, email };
+    const usuario = {
+        id: usuarios.length + 1,
+        nombre,
+        email
+    };
 
     usuarios.push(usuario);
 
-    res.status(201).json({
-        mensaje: "Usuario creado correctamente",
-        usuario
-    });
+    res.status(201).json(usuario);
 });
 
 app.get('/usuarios', (req, res) => {
@@ -34,10 +38,8 @@ app.get('/usuarios', (req, res) => {
 
 
 /* =============================
-   PRODUCTOS
+PRODUCTOS
 ============================= */
-
-let productos = [];
 
 app.post('/productos', (req, res) => {
     const { nombre, precio } = req.body;
@@ -56,10 +58,7 @@ app.post('/productos', (req, res) => {
 
     productos.push(producto);
 
-    res.status(201).json({
-        mensaje: "Producto creado",
-        producto
-    });
+    res.status(201).json(producto);
 });
 
 app.get('/productos', (req, res) => {
@@ -68,10 +67,8 @@ app.get('/productos', (req, res) => {
 
 
 /* =============================
-   FACTURAS
+FACTURAS
 ============================= */
-
-let facturas = [];
 
 app.post('/facturas', (req, res) => {
     const { usuarioId } = req.body;
@@ -90,10 +87,7 @@ app.post('/facturas', (req, res) => {
 
     facturas.push(factura);
 
-    res.status(201).json({
-        mensaje: "Factura creada",
-        factura
-    });
+    res.status(201).json(factura);
 });
 
 app.get('/facturas', (req, res) => {
@@ -102,7 +96,46 @@ app.get('/facturas', (req, res) => {
 
 
 /* =============================
-   SERVER
+DETALLE FACTURA
+============================= */
+
+app.post('/detalle-factura', (req, res) => {
+    const { facturaId, productoId, cantidad } = req.body;
+
+    if(!facturaId || !productoId || !cantidad){
+        return res.status(400).json({
+            mensaje: "facturaId, productoId y cantidad son obligatorios"
+        });
+    }
+
+    const producto = productos.find(p => p.id === productoId);
+
+    if(!producto){
+        return res.status(404).json({
+            mensaje: "Producto no encontrado"
+        });
+    }
+
+    const detalle = {
+        id: detalleFacturas.length + 1,
+        facturaId,
+        productoId,
+        cantidad,
+        subtotal: producto.precio * cantidad
+    };
+
+    detalleFacturas.push(detalle);
+
+    res.status(201).json(detalle);
+});
+
+app.get('/detalle-factura', (req, res) => {
+    res.json(detalleFacturas);
+});
+
+
+/* =============================
+SERVER
 ============================= */
 
 app.listen(3000, () => {
