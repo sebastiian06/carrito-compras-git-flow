@@ -1,23 +1,24 @@
-const express = require('express');
-const app = express();
+let productos = [];
 
-app.use(express.json());
+app.post('/productos', (req, res) => {
+    const { nombre, precio } = req.body;
 
-let usuarios = [];
+    if(!nombre || !precio){
+        return res.status(400).json({
+            mensaje: "nombre y precio son obligatorios"
+        });
+    }
 
-app.post('/usuarios', (req, res) => {
-    const usuario = req.body;
-    usuarios.push(usuario);
+    const producto = { nombre, precio };
+
+    productos.push(producto);
+
     res.status(201).json({
-        mensaje: "Usuario creado",
-        usuario: usuario
+        mensaje: "Producto creado",
+        producto
     });
 });
 
-app.get('/usuarios', (req, res) => {
-    res.json(usuarios);
-});
-
-app.listen(3000, () => {
-    console.log("Servidor corriendo en puerto 3000");
+app.get('/productos', (req, res) => {
+    res.json(productos);
 });
