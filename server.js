@@ -68,6 +68,40 @@ app.get('/productos', (req, res) => {
 
 
 /* =============================
+   FACTURAS
+============================= */
+
+let facturas = [];
+
+app.post('/facturas', (req, res) => {
+    const { usuarioId } = req.body;
+
+    if(!usuarioId){
+        return res.status(400).json({
+            mensaje: "usuarioId es obligatorio"
+        });
+    }
+
+    const factura = {
+        id: facturas.length + 1,
+        usuarioId,
+        fecha: new Date()
+    };
+
+    facturas.push(factura);
+
+    res.status(201).json({
+        mensaje: "Factura creada",
+        factura
+    });
+});
+
+app.get('/facturas', (req, res) => {
+    res.json(facturas);
+});
+
+
+/* =============================
    SERVER
 ============================= */
 
