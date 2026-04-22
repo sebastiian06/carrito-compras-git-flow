@@ -1,23 +1,17 @@
-const express = require('express');
-const app = express();
-
-app.use(express.json());
-
-let usuarios = [];
-
 app.post('/usuarios', (req, res) => {
-    const usuario = req.body;
+    const { nombre, email } = req.body;
+
+    if(!nombre || !email){
+        return res.status(400).json({
+            mensaje: "nombre y email son obligatorios"
+        });
+    }
+
+    const usuario = { nombre, email };
     usuarios.push(usuario);
+
     res.status(201).json({
-        mensaje: "Usuario creado",
-        usuario: usuario
+        mensaje: "Usuario creado correctamente",
+        usuario
     });
-});
-
-app.get('/usuarios', (req, res) => {
-    res.json(usuarios);
-});
-
-app.listen(3000, () => {
-    console.log("Servidor corriendo en puerto 3000");
 });
